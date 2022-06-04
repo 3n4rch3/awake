@@ -2,7 +2,7 @@
 
 
 Sec=120   ##Seconds between moves.
-Cutoff=12 ##Percentage below which sleep is allowed
+Cutoff=12 ##Batt percentage below which sleep is allowed
 
 
 ## Check if user is root:
