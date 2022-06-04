@@ -1,7 +1,8 @@
 #!/bin/bash
 
 
-Sec=120 ##Seconds between moves.
+Sec=120   ##Seconds between moves.
+Cutoff=12 ##Percentage below which sleep is allowed
 
 
 ## Check if user is root:
@@ -21,7 +22,7 @@ fi
 ## Move the mouse one pixel every Nmin to keep the screen awake,
 ## as long as Battery is more than 12% charge.
 ##
-echo -e "\n## Move the mouse one pixel every ${Sec} seconds to keep the screen\n## awake, as long as Battery is more than 12% charge.\n"
+echo -e "\n## Move the mouse one pixel every ${Sec} seconds to keep the screen\n## awake, as long as Battery is more than ${Cutoff}% charge.\n"
 batt=$(upower -i /org/freedesktop/UPower/devices/battery_BAT0 | grep "percentage:" \
   | gawk '{print $2}' | cut -d '%' -f 1 )
 echo -e "Battery: $batt%"
@@ -29,12 +30,11 @@ echo -e "Battery: $batt%"
 ## Start background service for 'ydotool':
 systemctl start ydotool
 
-## STOP ydotool daemon if we need to exit
-## with "Ctrl + C":
+## STOP ydotool daemon if we need to exit with "Ctrl + C":
 trap "{ systemctl stop ydotool; }" EXIT
 
-## Loop every 3 minutes while battery has sufficient charge:
-while [ "$batt" -gt 12 ] ; do 
+## Loop every $Sec seconds while battery has sufficient charge:
+while [ "$batt" -gt "${Cutoff}" ] ; do 
         sleep ${Sec}
         batt=$(upower -i /org/freedesktop/UPower/devices/battery_BAT0 | grep "percentage:" \
           | gawk '{print $2}' | cut -d '%' -f 1 )
